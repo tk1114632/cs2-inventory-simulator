@@ -209,7 +209,7 @@ export const schinese = {
   HeaderCraftInventoryFull: "你的库存已满。",
   HeaderCraftLabel: "制作物品",
   HeaderDonate: "捐赠",
-  HeaderInventoryLabel: "库存",
+  HeaderInventoryLabel: "自定义库存",
   HeaderSettingsLabel: "设置",
   HeaderSignedInAsLabel: "已登录为",
   HeaderSignInLabel: "登录以同步",
