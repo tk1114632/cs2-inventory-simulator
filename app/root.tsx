@@ -41,15 +41,11 @@ import { getSeoLinks, getSeoMeta } from "./root-seo";
 import { getSession } from "./session.server";
 import styles from "./tailwind.css?url";
 
-const bodyFontUrl =
-  "https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wdth,wght@0,62.5..100,400..800;1,62.5..100,400..800&display=swap";
-
-const displayFontUrl =
-  "https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600&display=swap";
+const bodyFontUrl = "//fonts.loli.net/css2?family=Noto+Sans:ital,wdth,wght@0,62.5..100,400..800;1,62.5..100,400..800&display=swap";
+const displayFontUrl = "//fonts.loli.net/css2?family=Exo+2:wght@300;400;600&display=swap";
 
 export const links: LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  { rel: "preconnect", href: "https://fonts.gstatic.com" },
+  { rel: "preconnect", href: "//fonts.loli.net" },
   { rel: "stylesheet", href: bodyFontUrl },
   { rel: "stylesheet", href: displayFontUrl },
   { rel: "stylesheet", href: styles },
