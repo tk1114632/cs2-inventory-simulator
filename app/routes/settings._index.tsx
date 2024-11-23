@@ -7,7 +7,7 @@ import { faTrashCan, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useNavigate, useSubmit } from "@remix-run/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   useInventory,
   useLocalize,
@@ -28,6 +28,8 @@ import { SyncAction } from "~/data/sync";
 import { middleware } from "~/http.server";
 import { getMetaTitle } from "~/root-meta";
 import { ApiActionPreferencesUrl } from "./api.action.preferences._index";
+import { useLoading } from "~/components/contexts/loading-context";
+import { CloseButton } from "~/components/close-button";
 
 export const meta = getMetaTitle("HeaderSettingsLabel");
 
@@ -47,6 +49,8 @@ export default function Settings() {
   const [inventory, setInventory] = useInventory();
   const localize = useLocalize();
   const sync = useSync();
+  const { setLoading } = useLoading();
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   const [background, setBackground] = useState(selectedBackground ?? "");
   const [hideFilters, setHideFilters] = useCheckbox(selectedHideFilters);
@@ -89,14 +93,19 @@ export default function Settings() {
     }
   }
 
+  useEffect(() => {
+    if (isFirstRender) {
+      setIsFirstRender(false);
+      setLoading("settingsModal", false);
+    }
+  }, [isFirstRender, setLoading]);
+
   return (
     <Modal className="w-[420px]">
       <div className="flex select-none items-center justify-between px-4 py-2 text-sm font-bold">
         <span className="text-neutral-400">{localize("SettingsHeader")}</span>
         <div className="flex items-center">
-          <Link className="opacity-50 hover:opacity-100" to="/">
-            <FontAwesomeIcon icon={faXmark} className="h-4" />
-          </Link>
+          <CloseButton onClick={() => navigate("/")} />
         </div>
       </div>
       <div className="space-y-2 px-4">

@@ -119,7 +119,7 @@ function AppContent({ appProps }: { appProps: any }) {
         <Outlet />
         <Footer />
         <SyncIndicator />
-        {isLoading("craftModal") && <LoadingIndicator />}
+        {(isLoading("craftModal") || isLoading("settingsModal")) && <LoadingIndicator />}
         <ScrollRestoration />
         <LocalizationScript />
         <CloudflareAnalyticsScript

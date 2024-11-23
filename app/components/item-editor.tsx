@@ -89,6 +89,7 @@ export function ItemEditor({
     NonNullable<CS2BaseInventoryItem["patches"]>
   >(attributes?.patches ?? {});
   const [quantity, setQuantity] = useState(defaultQuantity ?? 1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     craftable,
@@ -129,7 +130,13 @@ export function ItemEditor({
 
   maxQuantity ??= inventoryMaxQuantity;
 
-  function handleSubmit() {
+  const handleDismiss = () => {
+    setIsSubmitting(true);
+    onDismiss();
+  };
+
+  const handleSubmit = () => {
+    setIsSubmitting(true);
     onSubmit({
       patches:
         hasPatches && Object.keys(patches).length > 0 ? patches : undefined,
@@ -145,7 +152,7 @@ export function ItemEditor({
         : undefined,
       wear: hasWear && (!isCrafting || wear !== CS2_MIN_WEAR) ? wear : undefined
     });
-  }
+  };
 
   return (
     <div className="m-auto w-[368px] select-none px-4 pb-6 lg:px-0">
@@ -279,7 +286,11 @@ export function ItemEditor({
         )}
       </div>
       <div className="mt-6 flex justify-center gap-2">
-        <ModalButton variant="secondary" onClick={onDismiss}>
+        <ModalButton 
+          variant="secondary" 
+          onClick={handleDismiss}
+          disabled={isSubmitting}
+        >
           {type === "craft" && (
             <FontAwesomeIcon icon={faLongArrowLeft} className="mr-2 h-4" />
           )}
@@ -290,7 +301,7 @@ export function ItemEditor({
             children={localize(
               isCrafting || isSharing ? "EditorCraft" : "EditorSave"
             )}
-            disabled={!craftable}
+            disabled={!craftable || isSubmitting}
             onClick={handleSubmit}
             variant="primary"
           />

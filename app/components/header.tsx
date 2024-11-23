@@ -63,6 +63,13 @@ export function Header() {
     await navigate("/craft");
   };
 
+  const handleSettingsClick = async () => {
+    if (isLoading("settingsModal")) return;
+    setLoading("settingsModal", true);
+    closeMenu();
+    await navigate("/settings");
+  };
+
   return (
     <div
       className={clsx(
@@ -116,7 +123,7 @@ export function Header() {
                     <HeaderLink
                       to="/settings"
                       icon={faCog}
-                      onClick={closeMenu}
+                      onClick={handleSettingsClick}
                       label={localize("HeaderSettingsLabel")}
                     />
                   </div>
@@ -131,7 +138,7 @@ export function Header() {
                   />
                   <div className="gap-4 lg:flex lg:flex-1 lg:justify-end">
                     <DonateHeaderLink />
-                    <HeaderLink to="/settings" onClick={closeMenu}>
+                    <HeaderLink to="/settings" onClick={handleSettingsClick}>
                       <span className="text-neutral-400">
                         {localize("HeaderSignedInAsLabel")}
                       </span>
