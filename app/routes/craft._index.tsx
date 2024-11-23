@@ -34,6 +34,7 @@ import { range } from "~/utils/number";
 import { baseInventoryItemProps } from "~/utils/shapes";
 import { playSound } from "~/utils/sound";
 import { useLoading } from "~/components/contexts/loading-context";
+import { CloseButton } from "~/components/close-button";
 
 export const meta = getMetaTitle("HeaderCraftLabel");
 
@@ -180,9 +181,7 @@ export default function Craft() {
           )}
         </span>
         <div className="flex items-center">
-          <Link className="opacity-50 hover:opacity-100" to="/">
-            <FontAwesomeIcon icon={faXmark} className="h-4" />
-          </Link>
+          <CloseButton onClick={() => navigate("/")} />
         </div>
       </div>
       {shared?.user !== undefined && (
