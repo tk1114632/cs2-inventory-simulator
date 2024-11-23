@@ -31,6 +31,8 @@ import { InventoryItemContextMenu } from "./inventory-item-context-menu";
 import { InventoryItemTile } from "./inventory-item-tile";
 import { InventoryItemTooltip } from "./inventory-item-tooltip";
 import { alert } from "./modal-generic";
+import { useNavigate } from "@remix-run/react";
+import { useLoading } from "./contexts/loading-context";
 
 export function InventoryItem({
   disableContextMenu,
@@ -178,6 +180,9 @@ export function InventoryItem({
     !editHideId.includes(item.id);
   const canShare = inventoryItemAllowShare && item.isPaintable();
 
+  const navigate = useNavigate();
+  const { setLoading } = useLoading();
+
   function close(callBeforeClosing: () => void) {
     return function close() {
       callBeforeClosing();
@@ -185,6 +190,11 @@ export function InventoryItem({
       setIsHoverOpen(false);
     };
   }
+
+  const handleEdit = async (uid: number) => {
+    setLoading("craftModal", true);
+    await navigate(`/craft?uid=${uid}`);
+  };
 
   return (
     <>
@@ -373,7 +383,7 @@ export function InventoryItem({
                   {
                     condition: canEdit,
                     label: localize("InventoryItemEdit"),
-                    onClick: close(() => onEdit?.(uid))
+                    onClick: close(() => handleEdit(uid))
                   },
                   {
                     condition: canShare,

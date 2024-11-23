@@ -40,6 +40,8 @@ import { getToggleable } from "./preferences/toggleable.server";
 import { getSeoLinks, getSeoMeta } from "./root-seo";
 import { getSession } from "./session.server";
 import styles from "./tailwind.css?url";
+import { LoadingProvider, useLoading } from "./components/contexts/loading-context";
+import { LoadingIndicator } from "./components/loading-indicator";
 
 const bodyFontUrl = "//fonts.loli.net/css2?family=Noto+Sans:ital,wdth,wght@0,62.5..100,400..800;1,62.5..100,400..800&display=swap";
 const displayFontUrl = "//fonts.loli.net/css2?family=Exo+2:wght@300;400;600&display=swap";
@@ -79,52 +81,64 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
+// 创建一个包装组件来使用 loading context
+function AppContent({ appProps }: { appProps: any }) {
+  const { isLoading } = useLoading();
+  
+  return (
+    <html
+      lang={appProps.preferences.lang}
+      onContextMenu={(event) => event.preventDefault()}
+    >
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+        <link
+          rel="icon"
+          href={appProps.rules.appFaviconUrl || "/favicon.ico"}
+          type={appProps.rules.appFaviconMimeType || "image/x-icon"}
+        />
+        {getSeoLinks(appProps.rules).map((attributes, index) => (
+          <link key={index} {...attributes} />
+        ))}
+        {getSeoMeta(appProps.rules).map((attributes, index) => (
+          <meta key={index} {...attributes} />
+        ))}
+      </head>
+      <body className="overflow-y-scroll bg-stone-800">
+        <Splash />
+        <Background />
+        <Console />
+        <SyncWarn />
+        <ItemSelectorProvider>
+          <Header />
+          <Inventory />
+        </ItemSelectorProvider>
+        <Outlet />
+        <Footer />
+        <SyncIndicator />
+        {isLoading("craftModal") && <LoadingIndicator />}
+        <ScrollRestoration />
+        <LocalizationScript />
+        <CloudflareAnalyticsScript
+          token={appProps.rules.cloudflareAnalyticsToken}
+        />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
 export default function App() {
   const appProps = useTypedLoaderData<typeof loader>();
 
   return (
     <AppProvider {...appProps}>
-      <html
-        lang={appProps.preferences.lang}
-        onContextMenu={(event) => event.preventDefault()}
-      >
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <Meta />
-          <Links />
-          <link
-            rel="icon"
-            href={appProps.rules.appFaviconUrl || "/favicon.ico"}
-            type={appProps.rules.appFaviconMimeType || "image/x-icon"}
-          />
-          {getSeoLinks(appProps.rules).map((attributes, index) => (
-            <link key={index} {...attributes} />
-          ))}
-          {getSeoMeta(appProps.rules).map((attributes, index) => (
-            <meta key={index} {...attributes} />
-          ))}
-        </head>
-        <body className="overflow-y-scroll bg-stone-800">
-          <Splash />
-          <Background />
-          <Console />
-          <SyncWarn />
-          <ItemSelectorProvider>
-            <Header />
-            <Inventory />
-          </ItemSelectorProvider>
-          <Outlet />
-          <Footer />
-          <SyncIndicator />
-          <ScrollRestoration />
-          <LocalizationScript />
-          <CloudflareAnalyticsScript
-            token={appProps.rules.cloudflareAnalyticsToken}
-          />
-          <Scripts />
-        </body>
-      </html>
+      <LoadingProvider>
+        <AppContent appProps={appProps} />
+      </LoadingProvider>
     </AppProvider>
   );
 }

@@ -14,7 +14,7 @@ import { LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useNavigate } from "@remix-run/react";
 import clsx from "clsx";
 import lzstring from "lz-string";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { z } from "zod";
 import { useInventory, useLocalize } from "~/components/app-context";
@@ -33,6 +33,7 @@ import { deleteEmptyProps } from "~/utils/misc";
 import { range } from "~/utils/number";
 import { baseInventoryItemProps } from "~/utils/shapes";
 import { playSound } from "~/utils/sound";
+import { useLoading } from "~/components/contexts/loading-context";
 
 export const meta = getMetaTitle("HeaderCraftLabel");
 
@@ -80,6 +81,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Craft() {
   const { uid, shared } = useTypedLoaderData<typeof loader>();
+  const { setLoading } = useLoading();
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const isEditing = uid !== undefined;
   const isSharing = shared?.item !== undefined;
   const [inventory, setInventory] = useInventory();
@@ -98,6 +101,13 @@ export default function Craft() {
   const isDesktop = useIsDesktop();
 
   useLockScroll();
+
+  useEffect(() => {
+    if (isFirstRender) {
+      setIsFirstRender(false);
+      setLoading("craftModal", false);
+    }
+  }, [isFirstRender, setLoading]);
 
   function handleSubmit({
     quantity,
@@ -144,9 +154,10 @@ export default function Craft() {
 
   function handleReset() {
     if (isEditing || isSharing) {
-      return navigate("/");
+      navigate("/");
+    } else {
+      setSelectedItem(undefined);
     }
-    return setSelectedItem(undefined);
   }
 
   const isPickingItem = selectedItem === undefined;

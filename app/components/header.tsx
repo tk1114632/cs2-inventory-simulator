@@ -30,6 +30,8 @@ import { HeaderLink } from "./header-link";
 import { InventoryFilter } from "./inventory-filter";
 import { useItemSelector } from "./item-selector-context";
 import { Logo } from "./logo";
+import { useLoading } from "./contexts/loading-context";
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
   const user = useUser();
@@ -41,6 +43,8 @@ export function Header() {
   const [isMenuOpen, toggleIsMenuOpen] = useToggle(false);
   const isDesktop = useIsDesktop();
   const isOnTop = useIsOnTop();
+  const { setLoading, isLoading } = useLoading();
+  const navigate = useNavigate();
 
   function closeMenu() {
     toggleIsMenuOpen(false);
@@ -52,6 +56,12 @@ export function Header() {
   const isCraftDisabled = isInventoryFull || cannotCraftItems;
 
   const isSelectingAnItem = itemSelector !== undefined;
+
+  const handleCraftClick = async () => {
+    if (isLoading("craftModal")) return;
+    setLoading("craftModal", true);
+    await navigate("/craft");
+  };
 
   return (
     <div
@@ -92,7 +102,7 @@ export function Header() {
                 to="/craft"
                 icon={faHammer}
                 label={localize("HeaderCraftLabel")}
-                onClick={closeMenu}
+                onClick={handleCraftClick}
               />
               {user === undefined ? (
                 <>
